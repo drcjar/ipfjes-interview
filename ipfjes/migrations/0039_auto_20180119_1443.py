@@ -12,10 +12,10 @@ def migrate_forwards(apps, schema_editor):
 
     for asbestos_exposure_history in asbestos_exposure_histories:
         related_occupation = asbestos_exposure_history.related_occupation
+        episode = asbestos_exposure_history.episode
 
         if related_occupation:
             # this is related to an occupation
-            episode = asbestos_exposure_history.episode
             if not related_occupation.asbestosexposurescreening_set.exists():
                 related_occupation.asbestosexposurescreening_set.create(
                     exposed='Yes', episode=episode
