@@ -9,7 +9,7 @@ class SocCodeListView(viewsets.ModelViewSet):
     queryset = SocCode.objects.all().order_by("soc2000").order_by("soc90").order_by("title")
     serializer_class = SocCodeSerializer
     filter_backends = (filters.SearchFilter,)
-    search_fields = ('^title',)
+    search_fields = ('title',)
 
 
 router = opal_api.OPALRouter()

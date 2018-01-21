@@ -32,7 +32,7 @@
       <h4>
         Matches
         <span ng-show="editing.occupational_history._client.matches.length > 0">
-          ([[ matches.length ]])
+          ([[ editing.occupational_history._client.matches.length ]])
         </span>
       </h4>
       <ul class="well job-matches">
@@ -65,12 +65,24 @@
 </div>
 <div ng-show="!editing.occupational_history._client.editJob" class="row">
   <div class="col-md-12">
-    <h3>Job Title: [[ editing.occupational_history._client.job.title ]]
-      <a ng-click="switchToEditJob(editing.occupational_history._client)" class="btn btn-primary pull-right">
+    <h3>
+      <span ng-show="!editing.occupational_history._client.needs_reconcilation">
+        Job Title: [[ editing.occupational_history._client.job.title ]]
+      </span>
+      <span ng-show="editing.occupational_history._client.needs_reconcilation">
+        Job Title: [[ editing.occupational_history.soc_job ]]
+      </span>
+      <a ng-click="switchToEditJob(editing.occupational_history)" class="btn btn-primary pull-right">
         {% icon "fa-edit" %}
         Edit
       </a>
     </h3>
+    <div ng-show="editing.occupational_history._client.needs_reconcilation" class="row">
+      <div class="alert alert-danger col-md-10 col-md-push-1" role="alert">
+        <strong>Soc Job needs to be set!</strong> [[ editing.demographics.first_name ]]
+        Please set the specific type of [[ editing.occupational_history.soc_job ]]
+      </div>
+    </div>
   </div>
 </div>
 

@@ -75,8 +75,28 @@ angular.module('opal.controllers').controller(
             }
         };
 
-        scope.switchToEditJob = function(client){
-            client.editJob = true;
+        scope.switchToEditJob = function(oh){
+            oh._client.editJob = true;
+
+            if(oh.soc_code_id){
+                SocCodeService.load(oh.soc_code_id).then(function(sj){
+                  oh._client.job = sj;
+                  oh._client.soc_job_filter = sj.title;
+                  scope.filterChanged(oh._client);
+                  scope.select(sj, oh);
+                });
+            }
+            else{
+                oh._client.soc_job_filter = oh.soc_job;
+                scope.filterChanged(oh._client);
+                SocCodeService.search(oh._client.soc_job_filter).then(function(matches){
+                   oh._client.matches = matches;
+                   if(matches.length){
+                     scope.select(matches[0], oh);
+                     oh._client.needs_reconcilation = false;
+                   }
+                });
+            }
         };
 
         // this function overrides the pathway directive's add another
@@ -135,6 +155,9 @@ angular.module('opal.controllers').controller(
                       })
                     }
 
+                    if(oh.soc_job && !oh.soc_code_id){
+                      oh._client.needs_reconcilation = true;
+                    }
                     var nestedAeh = [];
 
                     if(oh.id){
