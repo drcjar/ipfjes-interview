@@ -50,8 +50,15 @@ angular.module('opal.controllers').controller(
           })
         }, 300);
 
-        scope.filterChanged = function(client){
-          return scope.search(client);
+        scope.filterChanged = function(oh){
+          if(!oh._client.soc_job_filter || !oh._client.soc_job_filter.length){
+            oh._client.matches = [];
+            oh._client.job = null;
+            oh.soc_code_id = null;
+          }
+          else{
+            return scope.search(oh._client);
+          }
         };
 
         scope.hasAEH = function(oh){
@@ -66,6 +73,7 @@ angular.module('opal.controllers').controller(
             });
             oh._client.aeh = [];
             oh.soc_code_id = oh._client.job.id;
+            oh.soc_job = oh._client.job.title;
             if(scope.socCodes[oh.soc_job]){
               scope.addAnotherAEH(oh._client.aeh, oh);
             }
@@ -86,13 +94,13 @@ angular.module('opal.controllers').controller(
                 SocCodeService.load(oh.soc_code_id).then(function(sj){
                   oh._client.job = sj;
                   oh._client.soc_job_filter = sj.title;
-                  scope.filterChanged(oh._client);
+                  scope.filterChanged(oh);
                   scope.select(sj, oh);
                 });
             }
             else{
                 oh._client.soc_job_filter = oh.soc_job;
-                scope.filterChanged(oh._client);
+                scope.filterChanged(oh);
                 SocCodeService.search(oh._client.soc_job_filter).then(function(matches){
                    oh._client.matches = matches;
                    if(matches.length){
