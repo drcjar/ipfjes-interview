@@ -15,7 +15,7 @@
   </span>
   <br />
 </span>
-<div ng-show="item._client.job.title || item.soc_code_id" class="row">
+<div ng-show="item.soc_job && ((item._client && !item._client.job.title) || !item.soc_code_id)" class="row">
   <div class="alert alert-danger col-md-10 col-md-push-1" role="alert">
     <strong>Soc Job needs to be set!</strong> [[ editing.demographics.first_name ]]
     Please set the specific type of [[ editing.occupational_history.soc_job ]]
