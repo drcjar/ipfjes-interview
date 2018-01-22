@@ -44,10 +44,14 @@ angular.module('opal.controllers').controller(
             occupational_history._client.job = job;
         };
 
+        scope.search = _.debounce(function(client){
+          return SocCodeService.search(client.soc_job_filter).then(function(matches){
+            client.matches = matches;
+          })
+        }, 300);
+
         scope.filterChanged = function(client){
-            return SocCodeService.search(client.soc_job_filter).then(function(matches){
-              client.matches = matches;
-            })
+          return scope.search(client);
         };
 
         scope.hasAEH = function(oh){
