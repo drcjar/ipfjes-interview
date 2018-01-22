@@ -1,15 +1,26 @@
-<span ng-show="item._client.job.title">
+<span ng-show="item._client.job.title || item.soc_job">
   <b>
     <span ng-show="item.start_year">
       [[ item.start_year ]]
       <span ng-show="item.end_year">
         - [[ item.end_year ]]
       </span>
+    </span>
   </b>
-  [[ item._client.job.title ]]
-  <br />
+  <span ng-show="item._client.job.title">
+    [[ item._client.job.title ]]
   </span>
+  <span ng-show="!item._client.job.title">
+    [[ item.soc_job ]]
+  </span>
+  <br />
 </span>
+<div ng-show="item._client.job.title || item.soc_code_id" class="row">
+  <div class="alert alert-danger col-md-10 col-md-push-1" role="alert">
+    <strong>Soc Job needs to be set!</strong> [[ editing.demographics.first_name ]]
+    Please set the specific type of [[ editing.occupational_history.soc_job ]]
+  </div>
+</div>
 
 <span ng-show="item.company_name">
   <b>[[ item.company_name ]]</b><br />

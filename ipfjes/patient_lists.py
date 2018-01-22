@@ -50,7 +50,11 @@ class OccupationalHistoriesIssuesList(core.patient_lists.PatientList):
     schema = [
         models.Demographics,
         models.Diagnosis,
-        models.Treatment
+        core.patient_lists.Column(
+            name="actions",
+            title="Actions",
+            template_path="issue_actions.html"
+        )
     ]
 
     def get_queryset(self, **kwargs):
