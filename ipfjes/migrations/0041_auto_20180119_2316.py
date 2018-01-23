@@ -28,7 +28,7 @@ def migrate_backwards(app, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ipfjes', '0039_occupationalhistory_soc_code'),
+        ('ipfjes', '0040_occupationalhistory_soc_code'),
     ]
 
     operations = [

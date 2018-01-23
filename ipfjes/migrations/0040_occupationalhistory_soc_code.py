@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ipfjes', '0038_reasonforremoval_removalreason'),
+        ('ipfjes', '0039_auto_20180119_1443'),
     ]
 
     operations = [
