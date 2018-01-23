@@ -40,16 +40,25 @@ angular.module('opal.controllers').controller(
             return result;
         };
 
-        scope.select = function(job, client){
-            client.job = job;
+        scope.select = function(job, occupational_history){
+            occupational_history._client.job = job;
         };
 
-        scope.filterChanged = function(client){
-            if(client.soc_job_filter && client.soc_job_filter.length > 2){
-                client.matches = _.filter(scope.socjob_list, function(j){
-                    return j.toLowerCase().indexOf(client.soc_job_filter.toLowerCase()) != -1;
-                });
-            }
+        scope.search = _.debounce(function(client){
+          return SocCodeService.search(client.soc_job_filter).then(function(matches){
+            client.matches = matches;
+          })
+        }, 300);
+
+        scope.filterChanged = function(oh){
+          if(!oh._client.soc_job_filter || !oh._client.soc_job_filter.length){
+            oh._client.matches = [];
+            oh._client.job = null;
+            oh.soc_code_id = null;
+          }
+          else{
+            return scope.search(oh._client);
+          }
         };
 
         scope.hasAEH = function(oh){
@@ -63,7 +72,8 @@ angular.module('opal.controllers').controller(
               }
             });
             oh._client.aeh = [];
-            oh.soc_job = oh._client.job || oh._client.soc_job_filter;
+            oh.soc_code_id = oh._client.job.id;
+            oh.soc_job = oh._client.job.title;
             if(scope.socCodes[oh.soc_job]){
               scope.addAnotherAEH(oh._client.aeh, oh);
             }
@@ -73,12 +83,32 @@ angular.module('opal.controllers').controller(
 
         scope.get_soc_details = function(client){
             if(client.job){
-                return '/soc/details/?title=' + client.job;
+                return '/soc/details/?title=' + client.job.title;
             }
         };
 
-        scope.switchToEditJob = function(client){
-            client.editJob = true;
+        scope.switchToEditJob = function(oh){
+            oh._client.editJob = true;
+
+            if(oh.soc_code_id){
+                SocCodeService.load(oh.soc_code_id).then(function(sj){
+                  oh._client.job = sj;
+                  oh._client.soc_job_filter = sj.title;
+                  scope.filterChanged(oh);
+                  scope.select(sj, oh);
+                });
+            }
+            else{
+                oh._client.soc_job_filter = oh.soc_job;
+                scope.filterChanged(oh);
+                SocCodeService.search(oh._client.soc_job_filter).then(function(matches){
+                   oh._client.matches = matches;
+                   if(matches.length){
+                     scope.select(matches[0], oh);
+                     oh._client.needs_reconcilation = false;
+                   }
+                });
+            }
         };
 
         // this function overrides the pathway directive's add another
@@ -117,12 +147,6 @@ angular.module('opal.controllers').controller(
         scope.socCodes = {};
         scope.aspestos_risk = {};
 
-        SocCodeService.load().then(function(data){
-            _.each(data, function(d){
-                scope.socCodes[d.title] = d;
-            });
-        });
-
         scope.initialise = function(){
             if(!scope.editing.occupational_history.length){
                 var oh = {_client: getClient()};
@@ -136,6 +160,16 @@ angular.module('opal.controllers').controller(
                 _.each(scope.editing.occupational_history, function(oh){
                     oh._client = getClient(oh);
 
+                    if(oh.soc_code_id){
+                      SocCodeService.load(oh.soc_code_id).then(function(job){
+                        oh._client.job = job;
+                        oh._client.soc_job_filter = job.title;
+                      })
+                    }
+
+                    if(oh.soc_job && !oh.soc_code_id){
+                      oh._client.needs_reconcilation = true;
+                    }
                     var nestedAeh = [];
 
                     if(oh.id){
@@ -168,12 +202,6 @@ angular.module('opal.controllers').controller(
                     }
                 });
             }
-            // load in the code service
-            SocCodeService.load().then(function(data){
-                _.each(data, function(d){
-                    scope.socCodes[d.title] = d;
-                });
-            });
         };
 
         scope.$watch(scope.editing, "occupational_history", function(){
