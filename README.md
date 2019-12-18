@@ -1,4 +1,6 @@
-This is IPFJES interview, a web based interview tool used in IPFJES (www.ipfjes.org). Contact hello@openhealthcare.org.uk for support.
+This is IPFJES interview, a web based interview tool used in IPFJES (www.ipfjes.org). 
+
+Contact hello@openhealthcare.org.uk for commercial enquiries and support.
 
 ### Development install
 
